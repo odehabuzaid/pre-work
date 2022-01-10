@@ -30,24 +30,6 @@ const userData = [
       ],
     },
   },
-  {
-    name: "Mahmoud",
-    email: "mahmoud@prisma.io",
-    posts: {
-      create: [
-        {
-          title: "Ask a question about Prisma on GitHub",
-          content: "https://www.github.com/prisma/prisma/discussions",
-          published: true,
-          viewCount: 128,
-        },
-        {
-          title: "Prisma on YouTube",
-          content: "https://pris.ly/youtube",
-        },
-      ],
-    },
-  },
 ];
 
 async function main() {

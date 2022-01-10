@@ -1,65 +1,14 @@
 # REST API Example
-  
-  "dependencies": {
-    "@prisma/client": "3.7.0",
-    "express": "4.17.2"
-  },
-  "devDependencies": {
-    "prisma": "3.7.0"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
-  }
-
-
-create sqlLite db ( based on schema configs)
-"provider = "sqlite"
-npx prisma migrate dev --name init 
-
-seed the db using prisma/seed.js
-npx prisma db seed 
-
-seed.js ...
-which allows import PrismaClient allows us to access the database through plain JavaScript methods and objects
-
-
-
-
 
 This example shows how to implement a **REST API** using [Express](https://expressjs.com/) and [Prisma Client](https://www.prisma.io/docs/concepts/components/prisma-client). It uses a SQLite database file with some initial dummy data which you can find at [`./prisma/dev.db`](./prisma/dev.db).
 
 ## Getting started
 
-### 1. Download example and install dependencies
-
-Download this example:
-
-```
-curl https://codeload.github.com/prisma/prisma-examples/tar.gz/latest | tar -xz --strip=2 prisma-examples-latest/javascript/rest-express
-```
-
-Install npm dependencies:
-```
-cd rest-express
-npm install
-```
-
-<details><summary><strong>Alternative:</strong> Clone the entire repo</summary>
-
-Clone this repository:
-
-```
-git clone git@github.com:prisma/prisma-examples.git --depth=1
-```
-
 Install npm dependencies:
 
 ```
-cd prisma-examples/javascript/rest-express
 npm install
 ```
-
-</details>
 
 ### 2. Create and seed the database
 
@@ -72,9 +21,8 @@ npx prisma migrate dev --name init
 Now, seed the database with the sample data in [`prisma/seed.js`](./prisma/seed.js) by running the following command:
 
 ```
-npx prisma db seed 
+npx prisma db seed
 ```
-
 
 ### 3. Start the REST API server
 
@@ -99,6 +47,7 @@ You can access the REST API of the server using the following endpoints:
     - `orderBy` (optional): The sort order for posts in either ascending or descending order. The value can either `asc` or `desc`
 - `/user/:id/drafts`: Fetch user's drafts by their `id`
 - `/users`: Fetch all users
+
 ### `POST`
 
 - `/post`: Create a new post
@@ -120,7 +69,6 @@ You can access the REST API of the server using the following endpoints:
 ### `DELETE`
 
 - `/post/:id`: Delete a post by its `id`
-
 
 ## Evolving the app
 
@@ -183,23 +131,23 @@ You can now use your `PrismaClient` instance to perform operations against the n
 Update your `index.js` file by adding a new endpoint to your API:
 
 ```js
-app.post('/user/:id/profile', async (req, res) => {
-  const { id } = req.params
-  const { bio } = req.body
+app.post("/user/:id/profile", async (req, res) => {
+  const { id } = req.params;
+  const { bio } = req.body;
 
   const profile = await prisma.profile.create({
     data: {
       bio,
       user: {
         connect: {
-          id: Number(id)
-        }
-      }
-    }
-  })
+          id: Number(id),
+        },
+      },
+    },
+  });
 
-  res.send(profile)
-})
+  res.send(profile);
+});
 ```
 
 #### 2.2 Testing out your new endpoint
@@ -212,7 +160,6 @@ Restart your application server and test out your new endpoint.
   - Body:
     - `bio: String` : The bio of the user
 
-
 <details><summary>Expand to view more sample Prisma Client queries on <code>Profile</code></summary>
 
 Here are some more sample Prisma Client queries on the new <code>Profile</code> model:
@@ -222,12 +169,12 @@ Here are some more sample Prisma Client queries on the new <code>Profile</code> 
 ```ts
 const profile = await prisma.profile.create({
   data: {
-    bio: 'Hello World',
+    bio: "Hello World",
     user: {
-      connect: { email: 'alice@prisma.io' },
+      connect: { email: "alice@prisma.io" },
     },
   },
-})
+});
 ```
 
 ##### Create a new user with a new profile
@@ -235,116 +182,30 @@ const profile = await prisma.profile.create({
 ```ts
 const user = await prisma.user.create({
   data: {
-    email: 'john@prisma.io',
-    name: 'John',
+    email: "john@prisma.io",
+    name: "John",
     profile: {
       create: {
-        bio: 'Hello World',
+        bio: "Hello World",
       },
     },
   },
-})
+});
 ```
 
 ##### Update the profile of an existing user
 
 ```ts
 const userWithUpdatedProfile = await prisma.user.update({
-  where: { email: 'alice@prisma.io' },
+  where: { email: "alice@prisma.io" },
   data: {
     profile: {
       update: {
-        bio: 'Hello Friends',
+        bio: "Hello Friends",
       },
     },
   },
-})
+});
 ```
 
 </details>
-
-## Switch to another database (e.g. PostgreSQL, MySQL, SQL Server, MongoDB)
-
-If you want to try this example with another database than SQLite, you can adjust the the database connection in [`prisma/schema.prisma`](./prisma/schema.prisma) by reconfiguring the `datasource` block. 
-
-Learn more about the different connection configurations in the [docs](https://www.prisma.io/docs/reference/database-reference/connection-urls).
-
-<details><summary>Expand for an overview of example configurations with different databases</summary>
-
-### PostgreSQL
-
-For PostgreSQL, the connection URL has the following structure:
-
-```prisma
-datasource db {
-  provider = "postgresql"
-  url      = "postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA"
-}
-```
-
-Here is an example connection string with a local PostgreSQL database:
-
-```prisma
-datasource db {
-  provider = "postgresql"
-  url      = "postgresql://janedoe:mypassword@localhost:5432/notesapi?schema=public"
-}
-```
-
-### MySQL
-
-For MySQL, the connection URL has the following structure:
-
-```prisma
-datasource db {
-  provider = "mysql"
-  url      = "mysql://USER:PASSWORD@HOST:PORT/DATABASE"
-}
-```
-
-Here is an example connection string with a local MySQL database:
-
-```prisma
-datasource db {
-  provider = "mysql"
-  url      = "mysql://janedoe:mypassword@localhost:3306/notesapi"
-}
-```
-
-### Microsoft SQL Server
-
-Here is an example connection string with a local Microsoft SQL Server database:
-
-```prisma
-datasource db {
-  provider = "sqlserver"
-  url      = "sqlserver://localhost:1433;initial catalog=sample;user=sa;password=mypassword;"
-}
-```
-
-### MongoDB
-
-Here is an example connection string with a local MongoDB database:
-
-```prisma
-datasource db {
-  provider = "mongodb"
-  url      = "mongodb://USERNAME:PASSWORD@HOST/DATABASE?authSource=admin&retryWrites=true&w=majority"
-}
-```
-Because MongoDB is currently in [Preview](https://www.prisma.io/docs/about/releases#preview), you need to specify the `previewFeatures` on your `generator` block:
-
-```
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["mongodb"]
-}
-```
-</details>
-
-## Next steps
-
-- Check out the [Prisma docs](https://www.prisma.io/docs)
-- Share your feedback in the [`prisma2`](https://prisma.slack.com/messages/CKQTGR6T0/) channel on the [Prisma Slack](https://slack.prisma.io/)
-- Create issues and ask questions on [GitHub](https://github.com/prisma/prisma/)
-- Watch our biweekly "What's new in Prisma" livestreams on [Youtube](https://www.youtube.com/channel/UCptAHlN1gdwD89tFM3ENb6w)
